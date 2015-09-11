@@ -1,0 +1,4 @@
+<%= form_tag("/photos", multipart: true) %>
+  <%= hidden_field_tag :time_name, value: @time_name %>
+  <input type="file" name="image" id="image" accept="image/*" capture="camera"><br />
+  <%= submit_tag "投稿" %><br />

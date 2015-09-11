@@ -1,0 +1,78 @@
+<div id="sample">
+  <% @time_lapse.each do |t| %>
+  	<div id="<%= t.mm_ss %>">
+      <div><%= t.mm_ss %></div>
+      <% if t.image.blank? %>
+        <%= link_to image_tag("no_image.png"), {}, onclick: "bake('#{t.mm_ss}');" %>
+      <% else %>
+        <a onclick="bake('<%= t.mm_ss %>');" href="/" tabindex="0"><img src="data:image/*;base64,<%= t.image %>"></a>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  $(function() {
+	  $('#sample').slick({
+      dots: true,
+      infinite: true,
+      speed: 300,
+      slidesToShow: 1,
+      adaptiveHeight: true
+    });
+  });
+  
+  // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
+  function bake(time_name) {
+    $.get("/apis/op", { time_name: time_name, op: "bake" }, function(data){
+      //alert("Data Loaded: " + data);
+      //a=data
+      countDown(data["time_name"]);
+    });
+  }
+  
+  // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
+  function release(time_name) {
+    $.get("/apis/op" + time_name, { time_name: time_name, op: "release" }, function(data){
+    });
+  }
+  
+  function countDown(arg) {
+    if (arguments.length > 1){
+      var mmss = arguments[1].split(":")
+    } else {
+      var mmss = arguments[0].split(":")
+      arguments[0] = mmss[0] + "\\:" + mmss[1]
+    }
+    var mm = mmss[0] * 1;
+    var ss = mmss[1];
+    if (ss == 0){
+      mm--;
+      ss = 59;
+    } else {
+      ss--;
+    }
+    time_limit = (mm < 10 ? "0" : "") + mm + ":" + (ss < 10 ? "0" : "") + ss;
+    
+    //console.log(time_limit);
+    //console.log('#'+arguments[0]);
+    $('#'+arguments[0]).children("div").text(time_limit);
+    if ("00:00" == time_limit){
+      mmss = arguments[0].split("\\:")
+      $('#'+arguments[0]).children("div").text(mmss[0] + ":" + mmss[1]);
+      
+      //no image判定
+      if ("No image" == $('#'+arguments[0]).children("a").children("img").attr("alt")){
+        var result = confirm(mmss[0] + ":" + mmss[1] + "の焼け具合を全世界に向けて共有しましょう！");
+        if(result){
+          console.log(" OK が押された");
+          window.location.href = '/photos/new?time_name='+mmss[0]+'%3a'+mmss[1];
+        }else{
+          console.log(" CANCEL が押された");
+        }
+      }
+    } else {
+      setTimeout(countDown, 1000, arguments[0], time_limit);
+    }
+  }
+</script>
