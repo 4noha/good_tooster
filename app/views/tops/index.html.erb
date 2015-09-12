@@ -1,11 +1,11 @@
 <div id="sample">
   <% @time_lapse.each do |t| %>
   	<div id="<%= t.mm_ss %>">
-      <div><%= t.mm_ss %></div>
+      <div style="font-size:100px;"><%= t.mm_ss %></div>
       <% if t.image.blank? %>
-        <%= link_to image_tag("no_image.png"), {}, onclick: "bake('#{t.mm_ss}');" %>
+        <%= link_to image_tag("no_image.png", style: "width:100%"), "#dummy", onclick: "bake('#{t.mm_ss}');" %>
       <% else %>
-        <a onclick="bake('<%= t.mm_ss %>');" href="/" tabindex="0"><img src="data:image/*;base64,<%= t.image %>"></a>
+        <a onclick="bake('<%= t.mm_ss %>');" href="#dummy" tabindex="0"><img src="data:image/*;base64,<%= t.image %>" style="width:100%;"></a>
       <% end %>
     </div>
   <% end %>
@@ -33,7 +33,7 @@
   
   // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
   function release(time_name) {
-    $.get("/apis/op" + time_name, { time_name: time_name, op: "release" }, function(data){
+    $.get("/apis/op", { time_name: time_name, op: "release" }, function(data){
     });
   }
   
@@ -60,7 +60,7 @@
     if ("00:00" == time_limit){
       mmss = arguments[0].split("\\:")
       $('#'+arguments[0]).children("div").text(mmss[0] + ":" + mmss[1]);
-      
+      release(mmss[0] + ":" + mmss[1]);
       //no image判定
       if ("No image" == $('#'+arguments[0]).children("a").children("img").attr("alt")){
         var result = confirm(mmss[0] + ":" + mmss[1] + "の焼け具合を全世界に向けて共有しましょう！");
