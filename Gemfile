@@ -26,6 +26,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 ######
 gem "jquery-slick-rails"
 gem 'rmagick', require: 'RMagick'
+gem "puma"
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
