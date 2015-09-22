@@ -20,6 +20,7 @@
       slidesToShow: 1,
       adaptiveHeight: true
     });
+    countDownFlag=false;
   });
   
   // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
@@ -27,6 +28,7 @@
     $.get("/apis/op", { time_name: time_name, op: "bake" }, function(data){
       //alert("Data Loaded: " + data);
       //a=data
+      countDownFlag = !countDownFlag;
       countDown(data["time_name"]);
     });
   }
@@ -54,13 +56,16 @@
     }
     time_limit = (mm < 10 ? "0" : "") + mm + ":" + (ss < 10 ? "0" : "") + ss;
     
-    //console.log(time_limit);
-    //console.log('#'+arguments[0]);
     $('#'+arguments[0]).children("div").text(time_limit);
-    if ("00:00" == time_limit){
+    if ("00:00" == time_limit || !countDownFlag){
       mmss = arguments[0].split("\\:")
       $('#'+arguments[0]).children("div").text(mmss[0] + ":" + mmss[1]);
       release(mmss[0] + ":" + mmss[1]);
+      if (!countDownFlag){
+        return
+      }
+      countDownFlag=false;
+      
       //no image判定
       if ("No image" == $('#'+arguments[0]).children("a").children("img").attr("alt")){
         var result = confirm(mmss[0] + ":" + mmss[1] + "の焼け具合を全世界に向けて共有しましょう！");
