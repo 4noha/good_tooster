@@ -2,16 +2,11 @@
 <!-- saved from url=(0022)http://localhost:3000/ -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <title>GoodToast</title>
+  <link rel="stylesheet" href="./index_files/swiper.min.css">
+  <script src="./index_files/swiper.min.js"></script>
   <script src="./index_files/jquery-3.2.1.min.js"></script>
 </head>
 <body>
-
-<div id="02:30" style="width: 486px;">
-  <div id="102:30" style="font-size:100px;">02:30</div>
-    <span onclick='bake("02:30")' ><img src="./index_files/230.png"></span>
-  </div>
-</div>
-
 <script>
   countDownFlag = false;
   // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
@@ -20,7 +15,7 @@
       //alert("Data Loaded: " + data);
       //a=data
       countDownFlag = !countDownFlag;
-      countDown(["02:30","02:30"]);
+      countDown([time_name, time_name]);
     });
   }
   
@@ -43,11 +38,12 @@
       ss--;
     }
     time_limit = (mm < 10 ? "0" : "") + mm + ":" + (ss < 10 ? "0" : "") + ss;
-    console.log(time_limit);
-    $('#102:30').text(time_limit);
+    //$(`#${ arguments[0] }`).text(time_limit);
+    document.querySelector(`div[id="${ arguments[0] }"]`).innerHTML = time_limit;
     if ("00:00" == time_limit || !countDownFlag){
       mmss = arguments[0].split("\:")
-      $('#102:30').text("02:30");
+      //$(`#${ arguments[0] }`).text(arguments[0]);
+      document.querySelector(`div[id="${ arguments[0] }"]`).innerHTML = arguments[0];
       release(":");
       if (!countDownFlag){
         return
@@ -60,9 +56,61 @@
 
   $(function() {
     $.get("/command.cgi?op=190&CTRL=0x03&DATA=0x1f");
+
+    var mySwiper = new Swiper ('.swiper-container', {
+      loop: true,
+      slidesPerView: 2,
+        spaceBetween: 10,
+        centeredSlides : true,
+      pagination: '.swiper-pagination',
+      nextButton: '.swiper-button-next',
+      prevButton: '.swiper-button-prev',
+      breakpoints: {
+        767: {
+          slidesPerView: 1,
+          spaceBetween: 0
+        }
+      }
+    })
   });
 </script>
 
 
-
+  <!-- Slider main container -->
+  <div class="swiper-container">
+    <!-- Additional required wrapper -->
+    <div class="swiper-wrapper">
+      <!-- Slides -->
+      <div class="swiper-slide">
+        <span onclick='bake("01:00")'>
+          <p style="text-align:center">
+            <div id="01:00" style="font-size:100px">01:00</div>
+          </p>
+          <img src="./index_files/nopan.png" style="width:100%">
+        </span>
+      </div>
+      <div class="swiper-slide">
+        <span onclick='bake("02:00")'>
+          <p style="text-align:center">
+            <div id="02:00" style="font-size:100px">02:00</div>
+          </p>
+          <img src="./index_files/230.png" style="width:100%">
+        </span>
+      </div>
+      <div class="swiper-slide">
+        <span onclick='bake("03:00")'>
+          <p style="text-align:center">
+            <div id="03:00" style="font-size:100px">03:00</div>
+          </p>
+          <img src="./index_files/nopan.png" style="width:100%">
+        </span>
+      </div>
+    </div>
+    <!-- If we need pagination -->
+    <div class="swiper-pagination"></div>
+    
+    <!-- If we need navigation buttons -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+  </div>
 </body></html>
