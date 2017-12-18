@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- saved from url=(0022)http://localhost:3000/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>GoodToast</title>
+  <script src="./index_files/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+
+<div id="02:30" style="width: 486px;">
+  <div id="102:30" style="font-size:100px;">02:30</div>
+    <span onclick='bake("02:30")' ><img src="./index_files/230.png"></span>
+  </div>
+</div>
+
+<script>
+  countDownFlag = false;
+  // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
+  function bake(time_name) {
+    $.get("/command.cgi?op=190&CTRL=0x03&DATA=0x1e", null, function(data){
+      //alert("Data Loaded: " + data);
+      //a=data
+      countDownFlag = !countDownFlag;
+      countDown(["02:30","02:30"]);
+    });
+  }
+  
+  // サーバにFlashairを動かしてもらう(らくにクロスドメインできる)
+  function release(time_name) {
+    $.get("/command.cgi?op=190&CTRL=0x03&DATA=0x1c", null, function(data){
+      $.get("/command.cgi?op=190&CTRL=0x03&DATA=0x1f");
+    });
+  }
+  
+  function countDown(arguments) {
+    console.log(arguments);
+    var mmss = arguments[1].split(":");
+    var mm = mmss[0] * 1;
+    var ss = mmss[1];
+    if (ss == 0){
+      mm--;
+      ss = 59;
+    } else {
+      ss--;
+    }
+    time_limit = (mm < 10 ? "0" : "") + mm + ":" + (ss < 10 ? "0" : "") + ss;
+    console.log(time_limit);
+    $('#102:30').text(time_limit);
+    if ("00:00" == time_limit || !countDownFlag){
+      mmss = arguments[0].split("\:")
+      $('#102:30').text("02:30");
+      release(":");
+      if (!countDownFlag){
+        return
+      }
+      countDownFlag=false;
+    } else {
+      setTimeout(countDown, 1000, [arguments[0], time_limit]);
+    }
+  }
+
+  $(function() {
+    $.get("/command.cgi?op=190&CTRL=0x03&DATA=0x1f");
+  });
+</script>
+
+
+
+</body></html>
